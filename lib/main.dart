@@ -3,6 +3,12 @@ import 'dart:io'; // <-- TAMBAHKAN INI
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart'; // ✅ TAMBAHAN WAJIB
+import 'firebase_options.dart';
+import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'services/notification_handler.dart';
 
 import 'app_routes.dart';
 import 'theme.dart';
@@ -23,12 +29,26 @@ class MyHttpOverrides extends HttpOverrides {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // ✅ TAMBAHAN WAJIB (TIDAK MENGUBAH ALUR)
+  FirebaseMessaging.onBackgroundMessage(
+    firebaseMessagingBackgroundHandler,
+  );
+
+  await Get.putAsync(() async => await SharedPreferences.getInstance());
+  await FirebaseMessagingHandler().initPushNotification();
+  await FirebaseMessagingHandler().initLocalNotification();
+
   // Tambahkan ini sebelum Supabase dan runApp
   HttpOverrides.global = MyHttpOverrides();
 
   await Supabase.initialize(
     url: "https://wieklovaspyelpuptzmc.supabase.co",
-    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndpZWtsb3Zhc3B5ZWxwdXB0em1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MDkyOTAsImV4cCI6MjA3OTQ4NTI5MH0.u1LQzwfRwZikZtA6lO3pGo1rSFZk2q8kCnbfHp029eM"
+    anonKey:
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndpZWtsb3Zhc3B5ZWxwdXB0em1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MDkyOTAsImV4cCI6MjA3OTQ4NTI5MH0.u1LQzwfRwZikZtA6lO3pGo1rSFZk2q8kCnbfHp029eM",
   );
 
   runApp(const VapeApp());
@@ -44,7 +64,7 @@ class VapeApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => ProductProvider()),
         ChangeNotifierProvider(create: (_) => FavoritesProvider()),
-        ChangeNotifierProvider(create: (_) => LocationProvider()), 
+        ChangeNotifierProvider(create: (_) => LocationProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

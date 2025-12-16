@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "301840818214",
+    "project_id": "vapelurrr-6d698",
+    "storage_bucket": "vapelurrr-6d698.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:301840818214:android:5ade01334a0ea3811d46e7",
+        "android_client_info": {
+          "package_name": "com.example.kelompokmodul3_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNyWDHBqGGvYrUIlBuBpGfKgIB_hA9KJU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

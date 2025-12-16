@@ -10,6 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  
+
 
   # --------------------
   # STATE MANAGEMENT
@@ -29,6 +31,11 @@ dependencies:
   http: ^1.1.0
   shared_preferences: ^2.2.2
   intl: ^0.19.0
+  firebase_core: ^4.2.1
+  firebase_messaging:  ^16.0.4
+  flutter_local_notifications: ^17.2.3
+  get: ^4.6.6
+  
 
 dev_dependencies:
   flutter_test:
