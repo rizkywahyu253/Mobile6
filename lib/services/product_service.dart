@@ -1,15 +1,34 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import '../models/product_model.dart';
 
 class ProductService {
-  final String apiUrl = "https://fakestoreapi.com/products";
+  Future<List<ProductModel>> fetchProducts() async {
+    await Future.delayed(const Duration(milliseconds: 400));
 
-  Future<List<dynamic>> fetchProducts() async {
-    final response = await http.get(Uri.parse(apiUrl));
-
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    }
-    throw Exception("Gagal fetch data produk");
+    return [
+      ProductModel(
+        id: 1,
+        title: 'Vape X Pro',
+        description: 'Vape premium dengan rasa kuat dan awet.',
+        price: 299.000,
+        category: 'Device',
+        imageUrl: 'assets/images/vape1.png',
+      ),
+      ProductModel(
+        id: 2,
+        title: 'Cloud Max Pod',
+        description: 'Pod system ringan dan praktis.',
+        price: 249.000,
+        category: 'Pod',
+        imageUrl: 'assets/images/vape2.png',
+      ),
+      ProductModel(
+        id: 3,
+        title: 'Nano Coil Kit',
+        description: 'Coil berkualitas tinggi untuk rasa maksimal.',
+        price: 149.000,
+        category: 'Coil',
+        imageUrl: 'assets/images/vape3.png',
+      ),
+    ];
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../providers/product_provider.dart';
 import '../providers/user_provider.dart';
 import '../app_routes.dart';
@@ -10,15 +11,26 @@ import '../page/network_location_page.dart';
 import '../page/gps_location_page.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  
+  final TextEditingController _searchController = TextEditingController();
+  String _keyword = "";
+
   @override
   void initState() {
     super.initState();
-    Provider.of<ProductProvider>(context, listen: false).loadProducts();
+
+    
+    Provider.of<ProductProvider>(
+      context,
+      listen: false,
+    ).loadProducts();
   }
 
   @override
@@ -26,8 +38,16 @@ class _HomePageState extends State<HomePage> {
     final productProv = Provider.of<ProductProvider>(context);
     final userProv = Provider.of<UserProvider>(context);
 
+    final filteredProducts = productProv.products
+        .where((product) =>
+            product.category
+                .toLowerCase()
+                .contains(_keyword.toLowerCase()))
+        .toList();
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 10, 10, 10),
+
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 218, 189, 6),
         elevation: 3,
@@ -48,7 +68,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-
         actions: [
           IconButton(
             icon: const Icon(Icons.map, color: Colors.black),
@@ -57,19 +76,22 @@ class _HomePageState extends State<HomePage> {
             },
           ),
           IconButton(
+            icon: const Icon(Icons.favorite, color: Colors.redAccent),
             onPressed: () {
               Navigator.pushNamed(context, AppRoutes.favorites);
             },
-            icon: const Icon(Icons.favorite, color: Colors.redAccent),
           ),
           IconButton(
+            icon: const Icon(Icons.logout, color: Colors.black),
             onPressed: () async {
               await userProv.logout();
               if (mounted) {
-                Navigator.pushReplacementNamed(context, AppRoutes.login);
+                Navigator.pushReplacementNamed(
+                  context,
+                  AppRoutes.login,
+                );
               }
             },
-            icon: const Icon(Icons.logout, color: Colors.black),
           ),
           const SizedBox(width: 8),
         ],
@@ -78,13 +100,14 @@ class _HomePageState extends State<HomePage> {
       body: productProv.isLoading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ============================
-                  // TAMBAHAN: MENU NETWORK & GPS
-                  // ============================
+                  
                   const Text(
                     "Menu",
                     style: TextStyle(
@@ -93,7 +116,6 @@ class _HomePageState extends State<HomePage> {
                       color: Color(0xFFFFD700),
                     ),
                   ),
-
                   const SizedBox(height: 10),
 
                   Row(
@@ -104,7 +126,8 @@ class _HomePageState extends State<HomePage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const NetworkLocationPage(),
+                                builder: (_) =>
+                                    const NetworkLocationPage(),
                               ),
                             );
                           },
@@ -117,12 +140,19 @@ class _HomePageState extends State<HomePage> {
                               padding: const EdgeInsets.all(16),
                               child: Row(
                                 children: const [
-                                  Icon(Icons.wifi_tethering, color: Colors.blue, size: 28),
+                                  Icon(
+                                    Icons.wifi_tethering,
+                                    color: Colors.blue,
+                                    size: 28,
+                                  ),
                                   SizedBox(width: 12),
                                   Expanded(
                                     child: Text(
                                       "Network Location\n(Lacak via Provider)",
-                                      style: TextStyle(color: Colors.white, fontSize: 14),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -131,16 +161,15 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       ),
-
-                      SizedBox(width: 10),
-
+                      const SizedBox(width: 10),
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const GPSLocationPage(),
+                                builder: (_) =>
+                                    const GPSLocationPage(),
                               ),
                             );
                           },
@@ -153,12 +182,19 @@ class _HomePageState extends State<HomePage> {
                               padding: const EdgeInsets.all(16),
                               child: Row(
                                 children: const [
-                                  Icon(Icons.gps_fixed, color: Colors.green, size: 28),
+                                  Icon(
+                                    Icons.gps_fixed,
+                                    color: Colors.green,
+                                    size: 28,
+                                  ),
                                   SizedBox(width: 12),
                                   Expanded(
                                     child: Text(
                                       "GPS Location\n(Lacak via GPS)",
-                                      style: TextStyle(color: Colors.white, fontSize: 14),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -166,15 +202,13 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                         ),
-                      )
+                      ),
                     ],
                   ),
 
                   const SizedBox(height: 20),
 
-                  // ============================
-                  // PRODUK TERBARU (ASLI)
-                  // ============================
+                  
                   const Text(
                     "Produk Terbaru",
                     style: TextStyle(
@@ -186,17 +220,67 @@ class _HomePageState extends State<HomePage> {
 
                   const SizedBox(height: 10),
 
+                  TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      setState(() {
+                        _keyword = value;
+                      });
+                    },
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: "Cari produk...",
+                      hintStyle:
+                          const TextStyle(color: Colors.white54),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        color: Colors.white,
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey.shade900,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      suffixIcon: _keyword.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(
+                                Icons.clear,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() {
+                                  _keyword = "";
+                                });
+                              },
+                            )
+                          : null,
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  
                   Expanded(
                     child: ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: productProv.products.length,
-                      itemBuilder: (_, i) {
+                      physics:
+                          const BouncingScrollPhysics(),
+                      itemCount: filteredProducts.length,
+                      itemBuilder: (context, index) {
                         return AnimatedOpacity(
                           opacity: 1,
-                          duration: Duration(milliseconds: 200 + (i * 80)),
+                          duration: Duration(
+                            milliseconds:
+                                200 + (index * 80),
+                          ),
                           child: Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: ProductCard(product: productProv.products[i]),
+                            padding: const EdgeInsets.only(
+                                bottom: 12),
+                            child: ProductCard(
+                              product:
+                                  filteredProducts[index],
+                            ),
                           ),
                         );
                       },

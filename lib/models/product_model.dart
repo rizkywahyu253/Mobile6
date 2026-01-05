@@ -15,14 +15,19 @@ class ProductModel {
     required this.imageUrl,
   });
 
-  factory ProductModel.fromJson(Map<String, dynamic> json) {
-    return ProductModel(
-      id: json['id'],
-      title: json['title'],
-      description: json['description'],
-      price: (json['price'] as num).toDouble(),
-      category: json['category'],
-      imageUrl: "https://source.unsplash.com/800x600/?vape,${json['category']}",
-    );
-  }
+  // ===============================
+  // 🔥 UNSPLASH OPTIMIZATION BONUS
+  // ===============================
+
+  /// Ukuran konsisten, ringan, tidak crop
+  String get imageSmall =>
+      "$imageUrl?w=300&h=300&fit=contain&auto=format";
+
+  /// Untuk card list / grid
+  String get imageMedium =>
+      "$imageUrl?w=400&h=400&fit=contain&auto=format";
+
+  /// Untuk detail page
+  String get imageLarge =>
+      "$imageUrl?w=800&h=800&fit=contain&auto=format";
 }
